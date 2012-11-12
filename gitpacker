@@ -114,7 +114,7 @@ def capture_or_die(dcmd, legend=""):
     
 def git_pack(indir, outdir, quiet=False):
     "Pack a tree sequence and associated logfile into a repository"
-    do_or_die("mkdir %s; git init -q" % outdir)
+    do_or_die("mkdir %s; git init -q %s" % (outdir, outdir))
     logfile = os.path.join(indir, "log")
     commit_id = [None]
     state = 0
@@ -181,6 +181,8 @@ def git_pack(indir, outdir, quiet=False):
                 comment = committername = authorname = ""
                 committerdate = authordate = committeremail = authoremail = ""
                 commitcount += 1
+                if commitcount >= maxcommit:
+                    break
             else:
                 if line.startswith("."):
                     line = line[1:]
@@ -250,17 +252,20 @@ def git_unpack(indir, outdir, quiet=False):
     os.remove(rawlogfile)
 
 if __name__ == '__main__':
-    (options, arguments) = getopt.getopt(sys.argv[1:], "ci:o:qxv")
+    (options, arguments) = getopt.getopt(sys.argv[1:], "ci:m:o:qxv")
     mode = 'auto'
     indir = '.'
     outdir = None
     quiet = False
+    maxcommit = 0
     verbose = 0
     for (opt, val) in options:
         if opt == '-x':
             mode = 'unpack'
         elif opt == '-c':
             mode = 'pack'
+        elif opt == '-m':
+            indir = int(val)
         elif opt == '-i':
             indir = val
         elif opt == '-o':
