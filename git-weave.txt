@@ -23,7 +23,7 @@ the output directory with a log holding commit metadata
 (committer/author/comment information and parent headers representing
 links of the repository DAG) and tags.
 
-Thes two modes of operation are almost lossless inverses of each
+These two modes of operation are almost lossless inverses of each
 other, except that signed tags in an unpacked repository lose
 their signature information.
 
