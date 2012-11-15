@@ -2,7 +2,7 @@
 """
 gitpacker - assemble tree sequences into repository histories
 
-Requires git, cp, and cpio.
+Requires git and cpio.
 """
 import sys, os, getopt, subprocess, time, tempfile
 
@@ -125,7 +125,7 @@ def git_pack(indir, outdir, quiet=False):
     linecount = 0
     for line in open(logfile):
         if verbose > DEBUG_PROGRESS:
-            print "Looking at: '%s'" % line
+            print "Looking at: '%s'" % repr(line)
         if state == 0:
             if line == '\n':
                 state = 1
@@ -155,7 +155,7 @@ def git_pack(indir, outdir, quiet=False):
                     do_or_die("cd %s; rm `git ls-tree --name-only HEAD`" % outdir)
                 if verbose > DEBUG_PROGRESS:
                     print "Copying"
-                do_or_die("cd %s/%d; cp . -r %s" % (indir,commitcount,outdir))
+                do_or_die("cd %s/%d; find . -print | cpio -pd --quiet %s" % (indir,commitcount,outdir))
                 do_or_die("cd %s; git add -A" % outdir) 
                 tree_id = capture_or_die("git write-tree").strip()
                 if verbose > DEBUG_PROGRESS:
@@ -291,6 +291,8 @@ if __name__ == '__main__':
     if os.path.exists(outdir):
         sys.stderr.write("gitpacker: output directory %s must not exist.\n" % outdir)
         sys.exit(1)
+    indir = os.path.abspath(indir)
+    outdir = os.path.abspath(outdir)
     if verbose:
         sys.stderr.write("gitpacker: %s from %s to %s.\n" % (mode, indir, outdir))
     try:
