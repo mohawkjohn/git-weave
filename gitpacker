@@ -123,6 +123,7 @@ def git_pack(indir, outdir, quiet=False):
     commitdate = authordate = commitemail = authoremail = ""
     commitcount = 1;
     linecount = 0
+    here = os.getcwd()
     for line in open(logfile):
         if verbose > DEBUG_PROGRESS:
             print "Looking at: '%s'" % repr(line)
@@ -151,12 +152,15 @@ def git_pack(indir, outdir, quiet=False):
             if line == ".\n":
                 if verbose > DEBUG_PROGRESS:
                     print "Interpretation begins"
+                os.chdir(outdir)
                 if commitcount > 1:
-                    do_or_die("cd %s; rm `git ls-tree --name-only HEAD`" % outdir)
+                    do_or_die("rm `git ls-tree --name-only HEAD`")
                 if verbose > DEBUG_PROGRESS:
                     print "Copying"
-                do_or_die("cd %s/%d; find . -print | cpio -pd --quiet %s" % (indir,commitcount,outdir))
-                do_or_die("cd %s; git add -A" % outdir) 
+                os.chdir("%s/%d" % (indir, commitcount))
+                do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
+                os.chdir(outdir)
+                do_or_die("git add -A") 
                 tree_id = capture_or_die("git write-tree").strip()
                 if verbose > DEBUG_PROGRESS:
                     print "Tree ID is", tree_id
@@ -164,7 +168,7 @@ def git_pack(indir, outdir, quiet=False):
                 with open(commentfile, "w") as cfp:
                     cfp.write(comment)
                 command = "git commit-tree %s " % tree_id
-                command += " ".join(map(lambda p: "-p " + commit_id[p],parents))
+                command += " ".join(map(lambda p: "-p " + commit_id[int(p)],parents))
                 command += "<'%s'" % commentfile
                 environment = ""
                 environment += " GIT_AUTHOR_NAME='%s' " % authorname
@@ -181,12 +185,13 @@ def git_pack(indir, outdir, quiet=False):
                 comment = committername = authorname = ""
                 committerdate = authordate = committeremail = authoremail = ""
                 commitcount += 1
-                if commitcount >= maxcommit:
+                if maxcommit != 0 and commitcount >= maxcommit:
                     break
             else:
                 if line.startswith("."):
                     line = line[1:]
                 comment += line
+    os.chdir(here)
 
 def git_unpack(indir, outdir, quiet=False):
     "Unpack a repository into a tree sequence and associated logfile."
