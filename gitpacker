@@ -201,20 +201,21 @@ def git_unpack(indir, outdir, quiet=False):
         baton.twirl()
         commitcount = 1
         commit_map = {}
+        os.chdir(indir)
         try:
             for line in open(rawlogfile):
                 baton.twirl()
                 if line.startswith("commit "):
                     commit = line.split()[1]
                     commit_map[commit] = commitcount
-                    do_or_die("cd %s; git checkout %s 2>/dev/null; mkdir %s/%d" \
-                              % (indir, commit, outdir, commitcount))
-                    do_or_die("cd %s; git ls-tree -r --name-only --full-tree %s | cpio -pd --quiet %s/%d"
-                              % (indir, commit, outdir, commitcount))
+                    do_or_die("git checkout %s 2>/dev/null; mkdir %s/%d" \
+                              % (commit, outdir, commitcount))
+                    do_or_die("git ls-tree -r --name-only --full-tree %s | cpio -pd --quiet %s/%d"
+                              % (commit, outdir, commitcount))
                     commitcount += 1
 
         finally:
-            do_or_die("cd %s; git reset --hard >/dev/null; git checkout master >/dev/null 2>&1" % indir)
+            do_or_die("git reset --hard >/dev/null; git checkout master >/dev/null 2>&1")
         cooked = os.path.join(outdir, "log")
         body_latch = False
         try:
