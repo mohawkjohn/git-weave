@@ -1,0 +1,89 @@
+git-weave(1)
+============
+
+NAME
+----
+git weave - Weave a sequence of trees and log data into a repository
+
+SYNOPSIS
+--------
+[verse]
+'git weave' [-v] [-m limit] [-q] indir outdir
+
+DESCRIPTION
+-----------
+git-weave accepts an input directory containing a sequence of
+subdirectories and a metadata log, and composes them into a 
+git repository created under the specified output directory
+(which must not exist).
+
+If the input directory is identifiably a git repository, the weave
+operation is reversed; tree states from each commit are dropped into
+the output directory with a log holding commit metadata
+(committer/author/comment information and parent headers representing
+links of the repository DAG) and tags.
+
+Thes two modes of operation are almost lossless inverses of each
+other, except that signed tags in an unpacked repository lose
+their signature information.
+
+Commits from a repository are unwoven into directories named for
+integers from 1 increasing, but their order of composition when
+re-woven is actually set by the sequence of entries in the log file.
+File trees may be inserted or removed without hindering re-weaving
+provided the pointers in the log's parent fields are fixed up
+properly.
+
+The log file format is similar to a native git raw log, but has been
+modified for easier editing.  The text body of a log entry must always
+end with "." on a line by itself, and text lines beginning with "."
+will have an additional "." prepended to them.
+
+OPTIONS
+-------
+-q::
+	Be quiet.  Suppress the normal spinning-baton progress meter
+	with timing information.
+
+-m::
+	Limit the number of commits or trees processed to a specified
+	integer maximum. '0' means process all of them.
+
+-v::
+	Be verbose, enabling progress and command-execution messages
+	This option will probably be of interest only to developers;
+	consult the source code for details.
+
+EXAMPLES
+--------
+* Weave a sequence of trees in the directory 'unraveled' 
+into a git repository in the directory 'repo'. 
++
+------------
+$ rm -fr repo; git-weave unraveled repo
+------------
++
+The metadata is expected to be in 'unraveled/log'.  This mode of
+operation is triggered when there is no file 'unraveled/.git', 
+
+* Unravel a repository in the directory 'repo' into a sequence
+of file trees and a metadata log in the directory 'unraveled'.
++
+------------
+$ rm -fr unraveled; git-weave repo unraveled
+------------
++
+This mode of operation is triggered when there is a 'repo/.git' file.
+
+SEE ALSO
+--------
+linkgit:git-log[1]
+linkgit:git-checkout[1]
+linkgit:git-add[1]
+linkgit:git-mktree[1]
+linkgit:git-ls-tree[1]
+linkgit:git-update-references[1]
+
+GIT
+---
+Part of the linkgit:git[1] suite
