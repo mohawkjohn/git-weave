@@ -123,73 +123,75 @@ def git_pack(indir, outdir, quiet=False):
     commitdate = authordate = commitemail = authoremail = ""
     commitcount = 1;
     linecount = 0
-    for line in open(logfile):
-        if verbose > DEBUG_PROGRESS:
-            print "Looking at: '%s'" % repr(line)
-        if state == 0:
-            if line == '\n':
-                state = 1
-            else:
-                try:
-                    space = line.index(' ')
-                    leader = line[:space]
-                    follower = line[space:].strip()
-                    if leader == "commit":
-                        commit = follower
-                    elif leader == "parent":
-                        parents.append(follower)
-                    elif leader not in ("author", "committer"):
-                        raise Fatal("unexpected log attribute at %s" \
-                                    % repr(line))
-                    elif leader == "committer":
-                        (committername, committeremail, committerdate) = [x.strip() for x in follower.replace('>','<').split('<')]
-                    elif leader == "author":
-                        (authorname, authoremail, authordate) = [x.strip() for x in follower.replace('>','<').split('<')]
-                except ValueError:
-                    raise Fatal('"%s", line %d: ill-formed log entry' % (logfile, linecount))
-        elif state == 1:
-            if line == ".\n":
-                if verbose > DEBUG_PROGRESS:
-                    print "Interpretation begins"
-                os.chdir(outdir)
-                if commitcount > 1:
-                    do_or_die("rm `git ls-tree --name-only HEAD`")
-                if verbose > DEBUG_PROGRESS:
-                    print "Copying"
-                os.chdir("%s/%d" % (indir, commitcount))
-                do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
-                os.chdir(outdir)
-                do_or_die("git add -A") 
-                tree_id = capture_or_die("git write-tree").strip()
-                if verbose > DEBUG_PROGRESS:
-                    print "Tree ID is", tree_id
-                (_, commentfile) = tempfile.mkstemp()
-                with open(commentfile, "w") as cfp:
-                    cfp.write(comment)
-                command = "git commit-tree %s " % tree_id
-                command += " ".join(map(lambda p: "-p " + commit_id[int(p)],parents))
-                command += "<'%s'" % commentfile
-                environment = ""
-                environment += " GIT_AUTHOR_NAME='%s' " % authorname
-                environment += " GIT_AUTHOR_EMAIL='%s' " % authoremail 
-                environment += " GIT_AUTHOR_DATE='%s' " % authordate 
-                environment += " GIT_COMMITTER_NAME='%s' " % committername
-                environment += " GIT_COMMITTER_EMAIL='%s' " % committeremail 
-                environment += " GIT_COMMITTER_DATE='%s' " % committerdate 
-                commit_id.append(capture_or_die(environment + command).strip())
-                do_or_die("git update-ref HEAD %s" % commit_id[-1])
-                os.remove(commentfile)
-                state = 0
-                parents = []
-                comment = committername = authorname = ""
-                committerdate = authordate = committeremail = authoremail = ""
-                commitcount += 1
-                if maxcommit != 0 and commitcount >= maxcommit:
-                    break
-            else:
-                if line.startswith("."):
-                    line = line[1:]
-                comment += line
+    with Baton("Packing", enable=not quiet) as baton:
+        for line in open(logfile):
+            if verbose > DEBUG_PROGRESS:
+                print "Looking at: '%s'" % repr(line)
+            if state == 0:
+                if line == '\n':
+                    state = 1
+                else:
+                    try:
+                        space = line.index(' ')
+                        leader = line[:space]
+                        follower = line[space:].strip()
+                        if leader == "commit":
+                            commit = follower
+                        elif leader == "parent":
+                            parents.append(follower)
+                        elif leader not in ("author", "committer"):
+                            raise Fatal("unexpected log attribute at %s" \
+                                        % repr(line))
+                        elif leader == "committer":
+                            (committername, committeremail, committerdate) = [x.strip() for x in follower.replace('>','<').split('<')]
+                        elif leader == "author":
+                            (authorname, authoremail, authordate) = [x.strip() for x in follower.replace('>','<').split('<')]
+                    except ValueError:
+                        raise Fatal('"%s", line %d: ill-formed log entry' % (logfile, linecount))
+            elif state == 1:
+                if line == ".\n":
+                    if verbose > DEBUG_PROGRESS:
+                        print "Interpretation begins"
+                    os.chdir(outdir)
+                    if commitcount > 1:
+                        do_or_die("rm `git ls-tree --name-only HEAD`")
+                    if verbose > DEBUG_PROGRESS:
+                        print "Copying"
+                    os.chdir("%s/%d" % (indir, commitcount))
+                    do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
+                    os.chdir(outdir)
+                    do_or_die("git add -A") 
+                    tree_id = capture_or_die("git write-tree").strip()
+                    if verbose > DEBUG_PROGRESS:
+                        print "Tree ID is", tree_id
+                    (_, commentfile) = tempfile.mkstemp()
+                    with open(commentfile, "w") as cfp:
+                        cfp.write(comment)
+                    command = "git commit-tree %s " % tree_id
+                    command += " ".join(map(lambda p: "-p " + commit_id[int(p)],parents))
+                    command += "<'%s'" % commentfile
+                    environment = ""
+                    environment += " GIT_AUTHOR_NAME='%s' " % authorname
+                    environment += " GIT_AUTHOR_EMAIL='%s' " % authoremail 
+                    environment += " GIT_AUTHOR_DATE='%s' " % authordate 
+                    environment += " GIT_COMMITTER_NAME='%s' " % committername
+                    environment += " GIT_COMMITTER_EMAIL='%s' " % committeremail 
+                    environment += " GIT_COMMITTER_DATE='%s' " % committerdate 
+                    commit_id.append(capture_or_die(environment + command).strip())
+                    do_or_die("git update-ref HEAD %s" % commit_id[-1])
+                    os.remove(commentfile)
+                    state = 0
+                    parents = []
+                    comment = committername = authorname = ""
+                    committerdate = authordate = committeremail = authoremail = ""
+                    commitcount += 1
+                    baton.twirl()
+                    if maxcommit != 0 and commitcount >= maxcommit:
+                        break
+                else:
+                    if line.startswith("."):
+                        line = line[1:]
+                    comment += line
 
 def git_unpack(indir, outdir, quiet=False):
     "Unpack a repository into a tree sequence and associated logfile."
@@ -297,7 +299,7 @@ if __name__ == '__main__':
         sys.exit(1)
     indir = os.path.abspath(indir)
     outdir = os.path.abspath(outdir)
-    if verbose:
+    if verbose >= DEBUG_PROGRESS:
         sys.stderr.write("gitpacker: %s from %s to %s.\n" % (mode, indir, outdir))
     try:
         try:
