@@ -177,7 +177,7 @@ def git_pack(indir, outdir, quiet=False):
                 environment += " GIT_COMMITTER_NAME='%s' " % committername
                 environment += " GIT_COMMITTER_EMAIL='%s' " % committeremail 
                 environment += " GIT_COMMITTER_DATE='%s' " % committerdate 
-                commit_id.append(capture_or_die(environment + command))
+                commit_id.append(capture_or_die(environment + command).strip())
                 do_or_die("git update-ref HEAD %s" % commit_id[-1])
                 os.remove(commentfile)
                 state = 0
