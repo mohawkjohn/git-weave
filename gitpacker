@@ -123,7 +123,6 @@ def git_pack(indir, outdir, quiet=False):
     commitdate = authordate = commitemail = authoremail = ""
     commitcount = 1;
     linecount = 0
-    here = os.getcwd()
     for line in open(logfile):
         if verbose > DEBUG_PROGRESS:
             print "Looking at: '%s'" % repr(line)
@@ -191,7 +190,6 @@ def git_pack(indir, outdir, quiet=False):
                 if line.startswith("."):
                     line = line[1:]
                 comment += line
-    os.chdir(here)
 
 def git_unpack(indir, outdir, quiet=False):
     "Unpack a repository into a tree sequence and associated logfile."
@@ -301,10 +299,14 @@ if __name__ == '__main__':
     if verbose:
         sys.stderr.write("gitpacker: %s from %s to %s.\n" % (mode, indir, outdir))
     try:
-        if mode == 'pack':
-            git_pack(indir, outdir, quiet=quiet)
-        elif mode == 'unpack':
-            git_unpack(indir, outdir, quiet=quiet)
+        try:
+            here = os.getcwd()
+            if mode == 'pack':
+                git_pack(indir, outdir, quiet=quiet)
+            elif mode == 'unpack':
+                git_unpack(indir, outdir, quiet=quiet)
+        finally:
+            os.chdir(here)
     except Fatal, e:
         sys.stderr.write(e.msg + "\n")
         sys.exit(1)
