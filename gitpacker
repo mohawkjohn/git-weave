@@ -240,6 +240,7 @@ def git_unpack(indir, outdir, quiet=False):
                         # FIXME: Check that log raw emits one parent per line
                         if leader in ("commit", "parent"):
                             line = "%s %s\n" % (leader, commit_map[follower])
+                            body_latch = False
                         elif leader not in ("author", "committer"):
                             raise Fatal("unexpected log attribute at %s" \
                                         % repr(line))
@@ -247,7 +248,6 @@ def git_unpack(indir, outdir, quiet=False):
                         if not body_latch:
                             body_latch = True
                         else:
-                            body_latch = False
                             continue
                     wfp.write(line)
                 wfp.write(".\n")
