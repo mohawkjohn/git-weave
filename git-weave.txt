@@ -3,7 +3,7 @@ git-weave(1)
 
 NAME
 ----
-git weave - Weave a sequence of trees and log data into a repository
+git-weave - Weave a sequence of trees and log data into a repository
 
 SYNOPSIS
 --------
@@ -91,4 +91,4 @@ linkgit:git-update-references[1]
 
 GIT
 ---
-Part of the linkgit:git[1] suite
+Not yet part of the linkgit:git[1] suite
