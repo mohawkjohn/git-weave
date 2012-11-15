@@ -75,6 +75,11 @@ $ rm -fr unraveled; git-weave repo unraveled
 +
 This mode of operation is triggered when there is a 'repo/.git' file.
 
+BUGS
+----
+Tags are not yet actually preserved.  The tool has not yet been tested on
+non-linear repositories.
+
 SEE ALSO
 --------
 linkgit:git-log[1]
