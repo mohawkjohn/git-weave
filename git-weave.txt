@@ -13,7 +13,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 git-weave accepts an input directory containing a sequence of
-subdirectories and a metadata log, and composes them into a 
+subdirectories and a metadata file, and composes them into a 
 git repository created under the specified output directory
 (which must not exist).
 
@@ -29,16 +29,48 @@ their signature information.
 
 Commits from a repository are unraveled into directories named for
 integers from 1 increasing, but their order of composition when
-re-woven is actually set by the sequence of entries in the log file.
-File trees may be inserted or removed without hindering re-weaving
-provided the pointers in the log's parent fields are fixed up
-properly.
+re-woven is actually set by the sequence of entries in the metadata
+file.  File trees may be inserted or removed without hindering
+re-weaving provided the pointers in the log's parent fields are fixed
+up properly.
 
-The log file format is similar to a native git raw log, but has been
-modified for easier editing.  The text body of a log entry is delimited
+METADATA FILE FORMAT
+--------------------
+The metadata file format will comtain three kinds of stanzas: entries
+for commits, entries for lightweight tags, and entries for annotated
+tags.
+
+A commit stanza has headers similar to those in a commit raw log: 
+commit, committer, author, and optionally parent headers.  The
+header contents are not hash IDs, but arbitrary text cookies either
+declared by a previous commit stanza or referencing one.  The
+following example declares "8" to be a commit ID, and references
+a previous commit identified as '7'.  Note that commit IDs are not
+required to integers, though the unravel operation generates them
+that way.
+
+------------
+commit 8
+parent 7
+author Eric S. Raymond <esr@thyrsus.com> 1325026869 +0000
+committer Eric S. Raymond <esr@thyrsus.com> 1325026869 +0000
+
+Initial revision
+.
+------------
+
+The text body of a commit comment or tag comment entry is delimited
 from the headers by an empty line; the text body must always end with
 "." on a line by itself; and text lines beginning with "."  will have
 an additional "." prepended to them.
+
+A link stanza declares a lightweight tag.  This example declares a
+tag 'sample' pointing at the commit identified as 102.
+
+------------
+commit 102
+link sample
+------------
 
 OPTIONS
 -------
@@ -78,8 +110,8 @@ This mode of operation is triggered when there is a 'repo/.git' file.
 
 BUGS
 ----
-Tags are not yet actually preserved.  The tool has not yet been tested on
-non-linear repositories.
+Annotated tags are not yet actually preserved.  The tool has not yet
+been tested on non-linear repositories.
 
 SEE ALSO
 --------
