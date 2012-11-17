@@ -9,8 +9,9 @@ Requires git and cpio.
 # 2. Verify function on multibranch repos.
 # 3. Write test suite.
 # 4. Most-recent-file date extraction from trees.
-# 5. Automatically unpack taballs and zips?
-# 6. Loot the contrib directory for other ideas.
+# 5. Default date to "now" in annotated tags 
+# 6. Automatically unpack taballs and zips?
+# 7. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
@@ -271,6 +272,28 @@ def git_unpack(indir, outdir, quiet=False):
                     if tagdata.startswith("commit"):
                         commit = commit_map[tagdata.split("\n")[0].split()[1]]
                         wfp.write("label %s\nrefers-to %s\n" % (tagname, commit))
+                    elif tagdata.startswith("tag"):
+                        for line in tagdata.split('\n'):
+                            if line.startswith("commit"):
+                                commit = line.strip().split()[1]
+                                break
+                        else:
+                            raise Fatal("no commit line in annotated tag")
+                        wfp.write("tag %s\nrefers-to %s\n" % (tagname, commit_map[commit]))
+                        stanza = capture_or_die("git cat-file -p " + tagname)
+                        body_latch = False
+                        for line in stanza.split("\n"):
+                            if not body_latch:
+                                if line == "":
+                                    body_latch = True
+                                    wfp.write("\n")
+                                elif line.startswith("tagger"):
+                                    wfp.write(line + "\n")
+                            else:
+                                if line.startswith("."):
+                                    line = "." + line
+                                wfp.write(line + "\n")
+                        wfp.write(line + ".\n")
         except (ValueError, IndexError, KeyError):
             raise Fatal("log rewrite failed on %s" % repr(line))
     os.remove(rawlogfile)

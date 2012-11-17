@@ -72,6 +72,22 @@ label sample
 refers-to 102
 ------------
 
+A tag stanza declares an annotated tag.  This one declares a tag bamed
+'annotated1' pointing at the commit declared as 99.
+
+------------
+tag annotated1
+refers-to 99
+tagger Eric S. Raymond <esr@thyrsus.com> Sat Nov 17 03:16:26 2012 -0500
+
+This is an example annotated tag.
+.
+------------
+
+When you are composing commit and tag stanzas by hand, you can count
+on any of the date formats normally acceptable to git to be
+recognized.
+
 OPTIONS
 -------
 -q::
