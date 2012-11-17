@@ -123,7 +123,7 @@ def git_pack(indir, outdir, quiet=False):
     "Pack a tree sequence and associated logfile into a repository"
     do_or_die("mkdir %s; git init -q %s" % (outdir, outdir))
     logfile = os.path.join(indir, "log")
-    commit_id = [None]
+    commit_id = {}
     state = 0
     parents = []
     comment = committername = authorname = ""
@@ -147,7 +147,7 @@ def git_pack(indir, outdir, quiet=False):
                         elif leader == "parent":
                             parents.append(follower)
                         elif leader == "link":
-                            do_or_die("git tag %s %s" % (follower, commit_id[int(commit)]))
+                            do_or_die("git tag %s %s" % (follower, commit_id[commit]))
                         elif leader not in ("author", "committer"):
                             raise Fatal("unexpected log attribute at %s" \
                                         % repr(line))
@@ -177,7 +177,7 @@ def git_pack(indir, outdir, quiet=False):
                     with open(commentfile, "w") as cfp:
                         cfp.write(comment)
                     command = "git commit-tree %s " % tree_id
-                    command += " ".join(map(lambda p: "-p " + commit_id[int(p)],parents))
+                    command += " ".join(map(lambda p: "-p " + commit_id[p],parents))
                     command += "<'%s'" % commentfile
                     environment = ""
                     environment += " GIT_AUTHOR_NAME='%s' " % authorname
@@ -186,8 +186,8 @@ def git_pack(indir, outdir, quiet=False):
                     environment += " GIT_COMMITTER_NAME='%s' " % committername
                     environment += " GIT_COMMITTER_EMAIL='%s' " % committeremail 
                     environment += " GIT_COMMITTER_DATE='%s' " % committerdate 
-                    commit_id.append(capture_or_die(environment + command).strip())
-                    do_or_die("git update-ref HEAD %s" % commit_id[-1])
+                    commit_id[commit] = capture_or_die(environment + command).strip()
+                    do_or_die("git update-ref HEAD %s" % commit_id[commit])
                     os.remove(commentfile)
                     state = 0
                     parents = []
