@@ -129,7 +129,7 @@ def git_pack(indir, outdir, quiet=False):
     parents = []
     comment = committername = authorname = ""
     commitdate = authordate = commitemail = authoremail = ""
-    link = ""
+    label = ""
     commitcount = 1;
     linecount = 0
     with Baton("Packing", enable=not quiet) as baton:
@@ -149,9 +149,9 @@ def git_pack(indir, outdir, quiet=False):
                         elif leader == "parent":
                             parents.append(follower)
                         elif leader == "label":
-                            link = follower
+                            label = follower
                         elif leader == "refers-to":
-                            do_or_die("git tag %s %s" % (link, commit_id[follower]))
+                            do_or_die("git tag %s %s" % (label, commit_id[follower]))
                         elif leader not in ("author", "committer"):
                             raise Fatal("unexpected log attribute at %s" \
                                         % repr(line))
