@@ -8,7 +8,7 @@ git-weave - Weave a sequence of trees and log data into a repository
 SYNOPSIS
 --------
 [verse]
-'git weave' [-v] [-m limit] [-q] indir outdir
+'git-weave' [-v] [-m limit] [-q] indir outdir
 
 DESCRIPTION
 -----------
@@ -18,7 +18,7 @@ git repository created under the specified output directory
 (which must not exist).
 
 If the input directory is identifiably a git repository, the weave
-operation is reversed; tree states from each commit are dropped into
+operation is reversed; tree states from each commit are unraveled into
 the output directory with a log holding commit metadata
 (committer/author/comment information and parent headers representing
 links of the repository DAG) and tags.
@@ -27,7 +27,7 @@ These two modes of operation are almost lossless inverses of each
 other, except that signed tags in an unpacked repository lose
 their signature information.
 
-Commits from a repository are unwoven into directories named for
+Commits from a repository are unraveled into directories named for
 integers from 1 increasing, but their order of composition when
 re-woven is actually set by the sequence of entries in the log file.
 File trees may be inserted or removed without hindering re-weaving
@@ -35,9 +35,10 @@ provided the pointers in the log's parent fields are fixed up
 properly.
 
 The log file format is similar to a native git raw log, but has been
-modified for easier editing.  The text body of a log entry must always
-end with "." on a line by itself, and text lines beginning with "."
-will have an additional "." prepended to them.
+modified for easier editing.  The text body of a log entry is delimited
+from the headers by an empty line; the text body must always end with
+"." on a line by itself; and text lines beginning with "."  will have
+an additional "." prepended to them.
 
 OPTIONS
 -------
