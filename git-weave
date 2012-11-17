@@ -282,7 +282,7 @@ def git_unpack(indir, outdir, quiet=False):
                         wfp.write("tag %s\nrefers-to %s\n" % (tagname, commit_map[commit]))
                         stanza = capture_or_die("git cat-file -p " + tagname)
                         body_latch = False
-                        for line in stanza.split("\n"):
+                        for line in stanza.split("\n")[:-1]:
                             if not body_latch:
                                 if line == "":
                                     body_latch = True
@@ -293,7 +293,7 @@ def git_unpack(indir, outdir, quiet=False):
                                 if line.startswith("."):
                                     line = "." + line
                                 wfp.write(line + "\n")
-                        wfp.write(line + ".\n")
+                        wfp.write(".\n")
         except (ValueError, IndexError, KeyError):
             raise Fatal("log rewrite failed on %s" % repr(line))
     os.remove(rawlogfile)
