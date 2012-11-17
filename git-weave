@@ -128,6 +128,7 @@ def git_pack(indir, outdir, quiet=False):
     parents = []
     comment = committername = authorname = ""
     commitdate = authordate = commitemail = authoremail = ""
+    link = ""
     commitcount = 1;
     linecount = 0
     with Baton("Packing", enable=not quiet) as baton:
@@ -146,8 +147,10 @@ def git_pack(indir, outdir, quiet=False):
                             commit = follower
                         elif leader == "parent":
                             parents.append(follower)
-                        elif leader == "link":
-                            do_or_die("git tag %s %s" % (follower, commit_id[commit]))
+                        elif leader == "label":
+                            link = follower
+                        elif leader == "refers-to":
+                            do_or_die("git tag %s %s" % (link, commit_id[follower]))
                         elif leader not in ("author", "committer"):
                             raise Fatal("unexpected log attribute at %s" \
                                         % repr(line))
@@ -267,7 +270,7 @@ def git_unpack(indir, outdir, quiet=False):
                     tagdata = capture_or_die("git show --format=raw " + tagname)
                     if tagdata.startswith("commit"):
                         commit = commit_map[tagdata.split("\n")[0].split()[1]]
-                        wfp.write("commit %s\nlink %s\n" % (commit, tagname))
+                        wfp.write("label %s\nrefers-to %s\n" % (tagname, commit))
         except (ValueError, IndexError, KeyError):
             raise Fatal("log rewrite failed on %s" % repr(line))
     os.remove(rawlogfile)
