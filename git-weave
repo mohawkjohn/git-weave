@@ -4,6 +4,13 @@ git-weave - assemble tree sequences into repository histories
 
 Requires git and cpio.
 """
+# TO DO: 
+# 1. Preserve tags.
+# 2. Verify function on multibranch repos.
+# 3. Write test suite.
+# 4. Most-recent-file date extraction from trees.
+# 5. Automatically unpack taballs and zips?
+# 6. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
