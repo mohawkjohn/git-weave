@@ -5,12 +5,12 @@ git-weave - assemble tree sequences into repository histories
 Requires git and cpio.
 """
 # TO DO: 
-# 1. Preserve tags.
-# 2. Verify function on multibranch repos.
-# 3. Write test suite.
-# 4. Most-recent-file date extraction from trees.
-# 5. Default date to "now" in annotated tags 
-# 6. Automatically unpack taballs and zips?
+# 1. Verify function on multibranch repos.
+# 2. Write test suite.
+# 3. Most-recent-file date extraction from trees.
+# 4. Default date to "now" in annotated tags 
+# 5. Automatically unpack taballs and zips?
+# 6. Directory header
 # 7. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
@@ -127,9 +127,9 @@ def git_pack(indir, outdir, quiet=False):
     commit_id = {}
     state = 0
     parents = []
+    commit = tagname = label = refers_to = ""
     comment = committername = authorname = ""
-    commitdate = authordate = commitemail = authoremail = ""
-    label = ""
+    commitdate = authordate = committeremail = authoremail = ""
     commitcount = 1;
     linecount = 0
     with Baton("Packing", enable=not quiet) as baton:
@@ -146,16 +146,22 @@ def git_pack(indir, outdir, quiet=False):
                         follower = line[space:].strip()
                         if leader == "commit":
                             commit = follower
+                        elif leader == "tag":
+                            tagname = follower
                         elif leader == "parent":
                             parents.append(follower)
                         elif leader == "label":
                             label = follower
                         elif leader == "refers-to":
-                            do_or_die("git tag %s %s" % (label, commit_id[follower]))
-                        elif leader not in ("author", "committer"):
+                            if tagname:
+                                refers_to = follower
+                            else:
+                                do_or_die("git tag %s %s" \
+                                          % (label, commit_id[follower]))
+                        elif leader not in ("author", "committer", "tagger"):
                             raise Fatal("unexpected log attribute at %s" \
                                         % repr(line))
-                        elif leader == "committer":
+                        elif leader == "committer" or leader == "tagger":
                             (committername, committeremail, committerdate) = [x.strip() for x in follower.replace('>','<').split('<')]
                         elif leader == "author":
                             (authorname, authoremail, authordate) = [x.strip() for x in follower.replace('>','<').split('<')]
@@ -166,41 +172,51 @@ def git_pack(indir, outdir, quiet=False):
                     if verbose > DEBUG_PROGRESS:
                         print "Interpretation begins"
                     os.chdir(outdir)
-                    if commitcount > 1:
-                        do_or_die("rm `git ls-tree --name-only HEAD`")
-                    if verbose > DEBUG_PROGRESS:
-                        print "Copying"
-                    os.chdir("%s/%d" % (indir, commitcount))
-                    do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
-                    os.chdir(outdir)
-                    do_or_die("git add -A") 
-                    tree_id = capture_or_die("git write-tree").strip()
-                    if verbose > DEBUG_PROGRESS:
-                        print "Tree ID is", tree_id
-                    (_, commentfile) = tempfile.mkstemp()
-                    with open(commentfile, "w") as cfp:
-                        cfp.write(comment)
-                    command = "git commit-tree %s " % tree_id
-                    command += " ".join(map(lambda p: "-p " + commit_id[p],parents))
-                    command += "<'%s'" % commentfile
-                    environment = ""
-                    environment += " GIT_AUTHOR_NAME='%s' " % authorname
-                    environment += " GIT_AUTHOR_EMAIL='%s' " % authoremail 
-                    environment += " GIT_AUTHOR_DATE='%s' " % authordate 
-                    environment += " GIT_COMMITTER_NAME='%s' " % committername
-                    environment += " GIT_COMMITTER_EMAIL='%s' " % committeremail 
-                    environment += " GIT_COMMITTER_DATE='%s' " % committerdate 
-                    commit_id[commit] = capture_or_die(environment + command).strip()
-                    do_or_die("git update-ref HEAD %s" % commit_id[commit])
-                    os.remove(commentfile)
+                    if commit:
+                        if commitcount > 1:
+                            do_or_die("rm `git ls-tree --name-only HEAD`")
+                        if verbose > DEBUG_PROGRESS:
+                            print "Copying"
+                        os.chdir("%s/%d" % (indir, commitcount))
+                        do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
+                        os.chdir(outdir)
+                        do_or_die("git add -A") 
+                        tree_id = capture_or_die("git write-tree").strip()
+                        if verbose > DEBUG_PROGRESS:
+                            print "Tree ID is", tree_id
+                        (_, commentfile) = tempfile.mkstemp()
+                        with open(commentfile, "w") as cfp:
+                            cfp.write(comment)
+                        command = "git commit-tree %s " % tree_id
+                        command += " ".join(map(lambda p: "-p " + commit_id[p],parents))
+                        command += "<'%s'" % commentfile
+                        environment = ""
+                        environment += " GIT_AUTHOR_NAME='%s' " % authorname
+                        environment += " GIT_AUTHOR_EMAIL='%s' " % authoremail 
+                        environment += " GIT_AUTHOR_DATE='%s' " % authordate 
+                        environment += " GIT_COMMITTER_NAME='%s' " % committername
+                        environment += " GIT_COMMITTER_EMAIL='%s' " % committeremail 
+                        environment += " GIT_COMMITTER_DATE='%s' " % committerdate 
+                        commit_id[commit] = capture_or_die(environment + command).strip()
+                        do_or_die("git update-ref HEAD %s" % commit_id[commit])
+                        os.remove(commentfile)
+                        commitcount += 1
+                        baton.twirl()
+                        if maxcommit != 0 and commitcount >= maxcommit:
+                            break
+                    if tagname and refers_to:
+                        environment += " GIT_COMMITTER_NAME='%s' " % committername
+                        environment += " GIT_COMMITTER_EMAIL='%s' " % committeremail 
+                        environment += " GIT_COMMITTER_DATE='%s' " % committerdate 
+                        command = "git tag -a -m '%s' %s %s" % \
+                                  (comment, tagname, commit_id[refers_to])
+                        do_or_die(environment + command)
                     state = 0
+                    baton.twirl()
                     parents = []
+                    commit = tagname = label = refers_to = ""
                     comment = committername = authorname = ""
                     committerdate = authordate = committeremail = authoremail = ""
-                    commitcount += 1
-                    baton.twirl()
-                    if maxcommit != 0 and commitcount >= maxcommit:
-                        break
                 else:
                     if line.startswith("."):
                         line = line[1:]
