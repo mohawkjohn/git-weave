@@ -46,7 +46,7 @@ header contents are not hash IDs, but arbitrary text cookies either
 declared by a previous commit stanza or referencing one.  The
 following example declares "8" to be a commit ID, and references
 a previous commit identified as '7'.  Note that commit IDs are not
-required to integers, though the unravel operation generates them
+required to be integers, though the unravel operation generates them
 that way.
 
 ------------
