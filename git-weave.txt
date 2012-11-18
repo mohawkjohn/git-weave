@@ -72,7 +72,7 @@ label sample
 refers-to 102
 ------------
 
-A tag stanza declares an annotated tag.  This one declares a tag bamed
+A tag stanza declares an annotated tag.  This one declares a tag named
 'annotated1' pointing at the commit declared as 99.
 
 ------------
@@ -126,8 +126,7 @@ This mode of operation is triggered when there is a 'repo/.git' file.
 
 BUGS
 ----
-Annotated tags are not yet actually preserved.  The tool has not yet
-been tested on non-linear repositories.
+The tool has not yet been tested on non-linear repositories.
 
 SEE ALSO
 --------
