@@ -7,7 +7,7 @@ Requires git and cpio.
 # TO DO: 
 # 1. Most-recent-file date extraction from trees.
 # 2. Default date to "now" in annotated tags 
-# 3. Automatically unpack taballs and zips?
+# 3. Automatically explode tarballs and zips?
 # 4. Directory header
 # 5. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
@@ -118,8 +118,8 @@ def capture_or_die(dcmd, legend=""):
             sys.stderr.write("git-weave: child returned %d." % e.returncode)
         sys.exit(1)
     
-def git_pack(indir, outdir, quiet=False):
-    "Pack a tree sequence and associated logfile into a repository"
+def git_weave(indir, outdir, quiet=False):
+    "Weave a tree sequence and associated logfile into a repository"
     do_or_die("mkdir %s; git init -q %s" % (outdir, outdir))
     logfile = os.path.join(indir, "log")
     commit_id = {}
@@ -130,7 +130,7 @@ def git_pack(indir, outdir, quiet=False):
     commitdate = authordate = committeremail = authoremail = ""
     commitcount = 1;
     linecount = 0
-    with Baton("Packing", enable=not quiet) as baton:
+    with Baton("Weaving", enable=not quiet) as baton:
         for line in open(logfile):
             if verbose > DEBUG_PROGRESS:
                 print "Looking at: '%s'" % repr(line)
@@ -220,10 +220,12 @@ def git_pack(indir, outdir, quiet=False):
                         line = line[1:]
                     comment += line
 
-def git_unpack(indir, outdir, quiet=False):
-    "Unpack a repository into a tree sequence and associated logfile."
+def git_ravel(indir, outdir, quiet=False):
+    "Ravel a repository into a tree sequence and associated logfile."
+    if capture_or_die("git branch -l").count("\n") > 1:
+        sys.stderr("git-weave: warning - non-master branch conrent will be lost.\n")
     rawlogfile = os.path.join(outdir, "rawlog")
-    with Baton("Unpacking", enable=not quiet) as baton:
+    with Baton("Raveling", enable=not quiet) as baton:
         do_or_die("rm -fr %s; mkdir %s" % (outdir, outdir))
         baton.twirl()
         do_or_die("cd %s; git log --all --reverse --format=raw >%s" % (indir, rawlogfile))
@@ -338,9 +340,9 @@ if __name__ == '__main__':
         sys.stderr.write("git-weave: output directory %s must not exist.\n" % outdir)
         sys.exit(1)
     if os.path.exists(os.path.join(indir, ".git")):
-        mode = 'unpack'
+        mode = 'ravel'
     else:
-        mode = 'pack'
+        mode = 'weave'
     indir = os.path.abspath(indir)
     outdir = os.path.abspath(outdir)
     if verbose >= DEBUG_PROGRESS:
@@ -348,10 +350,10 @@ if __name__ == '__main__':
     try:
         try:
             here = os.getcwd()
-            if mode == 'pack':
-                git_pack(indir, outdir, quiet=quiet)
-            elif mode == 'unpack':
-                git_unpack(indir, outdir, quiet=quiet)
+            if mode == 'weave':
+                git_weave(indir, outdir, quiet=quiet)
+            elif mode == 'ravel':
+                git_ravel(indir, outdir, quiet=quiet)
         finally:
             os.chdir(here)
     except Fatal, e:
