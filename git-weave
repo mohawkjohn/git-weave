@@ -6,12 +6,11 @@ Requires git and cpio.
 """
 # TO DO: 
 # 1. Verify function on multibranch repos.
-# 2. Write test suite.
-# 3. Most-recent-file date extraction from trees.
-# 4. Default date to "now" in annotated tags 
-# 5. Automatically unpack taballs and zips?
-# 6. Directory header
-# 7. Loot the contrib directory for other ideas.
+# 2. Most-recent-file date extraction from trees.
+# 3. Default date to "now" in annotated tags 
+# 4. Automatically unpack taballs and zips?
+# 5. Directory header
+# 6. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
