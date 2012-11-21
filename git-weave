@@ -7,9 +7,8 @@ Requires git and cpio.
 # TO DO: 
 # 1. Most-recent-file date extraction from trees.
 # 2. Default date to "now" in annotated tags 
-# 3. Automatically explode tarballs and zips?
-# 4. Directory header
-# 5. Loot the contrib directory for other ideas.
+# 3. Directory header
+# 4. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
