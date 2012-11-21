@@ -130,9 +130,9 @@ def git_weave(indir, outdir, quiet=False):
     parents = []
     commit = tagname = label = refers_to = ""
     comment = committername = authorname = ""
-    commitdate = authordate = committeremail = authoremail = ""
+    committerdate = authordate = committeremail = authoremail = ""
     directory = None
-    commitcount = 1;
+    commitcount = 1
     linecount = 0
     with Baton("Weaving", enable=not quiet) as baton:
         for line in open(logfile):
@@ -192,7 +192,7 @@ def git_weave(indir, outdir, quiet=False):
                         with open(commentfile, "w") as cfp:
                             cfp.write(comment)
                         command = "git commit-tree %s " % tree_id
-                        command += " ".join(map(lambda p: "-p " + commit_id[p],parents))
+                        command += " ".join(map(lambda p: "-p " + commit_id[p], parents))
                         command += "<'%s'" % commentfile
                         environment = ""
                         environment += " GIT_AUTHOR_NAME='%s' " % authorname
@@ -230,7 +230,7 @@ def git_weave(indir, outdir, quiet=False):
 def git_ravel(indir, outdir, quiet=False):
     "Ravel a repository into a tree sequence and associated logfile."
     if capture_or_die("git branch -l").count("\n") > 1:
-        sys.stderr("git-weave: warning - non-master branch conrent will be lost.\n")
+        sys.stderr.write("git-weave: warning - non-master branch conrent will be lost.\n")
     rawlogfile = os.path.join(outdir, "rawlog")
     with Baton("Raveling", enable=not quiet) as baton:
         do_or_die("rm -fr %s; mkdir %s" % (outdir, outdir))
@@ -363,8 +363,8 @@ if __name__ == '__main__':
                 git_ravel(indir, outdir, quiet=quiet)
         finally:
             os.chdir(here)
-    except Fatal, e:
-        sys.stderr.write(e.msg + "\n")
+    except Fatal, err:
+        sys.stderr.write(err.msg + "\n")
         sys.exit(1)
     except KeyboardInterrupt:
         pass
