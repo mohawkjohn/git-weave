@@ -174,7 +174,7 @@ def git_pack(indir, outdir, quiet=False):
                     os.chdir(outdir)
                     if commit:
                         if commitcount > 1:
-                            do_or_die("rm `git ls-tree --name-only HEAD`")
+                            do_or_die("rm `git ls-tree -r --full-name --name-only HEAD`")
                         if verbose > DEBUG_PROGRESS:
                             print "Copying"
                         os.chdir("%s/%d" % (indir, commitcount))
@@ -241,7 +241,7 @@ def git_unpack(indir, outdir, quiet=False):
                     commit_map[commit] = commitcount
                     do_or_die("git checkout %s 2>/dev/null; mkdir %s/%d" \
                               % (commit, outdir, commitcount))
-                    do_or_die("git ls-tree -r --name-only --full-tree %s | cpio -pd --quiet %s/%d"
+                    do_or_die("git ls-tree -r --full-name --name-only %s | cpio -pd --quiet %s/%d"
                               % (commit, outdir, commitcount))
                     commitcount += 1
 
