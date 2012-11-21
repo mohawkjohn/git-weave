@@ -7,8 +7,7 @@ Requires git and cpio.
 # TO DO: 
 # 1. Most-recent-file date extraction from trees.
 # 2. Default date to "now" in annotated tags 
-# 3. Directory header
-# 4. Loot the contrib directory for other ideas.
+# 3. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
@@ -127,6 +126,7 @@ def git_weave(indir, outdir, quiet=False):
     commit = tagname = label = refers_to = ""
     comment = committername = authorname = ""
     commitdate = authordate = committeremail = authoremail = ""
+    directory = None
     commitcount = 1;
     linecount = 0
     with Baton("Weaving", enable=not quiet) as baton:
@@ -143,6 +143,8 @@ def git_weave(indir, outdir, quiet=False):
                         follower = line[space:].strip()
                         if leader == "commit":
                             commit = follower
+                        elif leader == "directory":
+                            directory = follower
                         elif leader == "tag":
                             tagname = follower
                         elif leader == "parent":
@@ -174,7 +176,7 @@ def git_weave(indir, outdir, quiet=False):
                             do_or_die("rm `git ls-tree -r --full-name --name-only HEAD`")
                         if verbose > DEBUG_PROGRESS:
                             print "Copying"
-                        os.chdir("%s/%d" % (indir, commitcount))
+                        os.chdir("%s/%s" % (indir, directory or commitcount))
                         do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
                         os.chdir(outdir)
                         do_or_die("git add -A") 
@@ -214,6 +216,7 @@ def git_weave(indir, outdir, quiet=False):
                     commit = tagname = label = refers_to = ""
                     comment = committername = authorname = ""
                     committerdate = authordate = committeremail = authoremail = ""
+                    directory = None
                 else:
                     if line.startswith("."):
                         line = line[1:]

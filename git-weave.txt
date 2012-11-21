@@ -28,10 +28,6 @@ An important restriction of this command is that it operates on
 histories that have been preserved only as linear sequences of release
 snapshots.  The unravel operation discards non-master-branch content.
 
-Otherwise these weave and unravel modes of operation are almost
-lossless inverses of each other, except that signed tags in an
-unpacked repository lose their signature information.
-
 Commits from the repository's master branch are unraveled into
 directories named for integers from 1 increasing, but their order of
 composition when re-woven is actually set by the sequence of entries
@@ -67,6 +63,21 @@ The text body of a commit comment or tag comment entry is delimited
 from the headers by an empty line; the text body must always end with
 "." on a line by itself; and text lines beginning with "."  will have
 an additional "." prepended to them.
+
+A commit stanza may also have a "directory" header.  If present, this 
+sets the name of the subdirectory in which git-weave expects to
+find the content tree for this commit.  For example
+
+------------
+commit 24
+directory intercal-0.17
+parent 23
+author Eric S. Raymond <esr@thyrsus.com> 1325026489 +0000
+committer Eric S. Raymond <esr@thyrsus.com> 1325026489 +0000
+
+The state of the INTERCAL project at release 0.17.
+.
+------------
 
 A label stanza declares a lightweight tag.  This example declares a
 tag 'sample' pointing at the commit identified as 102.
