@@ -10,9 +10,7 @@ Distributed under BSD terms.  Permission is explicitly granted for the
 git project to distribute under the maintainer's choice of license.
 """
 # TO DO: 
-# 1. Most-recent-file date extraction from trees.
-# 2. Default date to "now" in annotated tags 
-# 3. Loot the contrib directory for other ideas.
+# 1. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
@@ -167,8 +165,10 @@ def git_weave(indir, outdir, quiet=False):
                                         % repr(line))
                         elif leader == "committer" or leader == "tagger":
                             (committername, committeremail, committerdate) = [x.strip() for x in follower.replace('>','<').split('<')]
+                            committerdate = committerdate.strip()
                         elif leader == "author":
                             (authorname, authoremail, authordate) = [x.strip() for x in follower.replace('>','<').split('<')]
+                            authordate = authordate.strip()
                     except ValueError:
                         raise Fatal('"%s", line %d: ill-formed log entry' % (logfile, linecount))
             elif state == 1:
@@ -183,6 +183,17 @@ def git_weave(indir, outdir, quiet=False):
                             print "Copying"
                         os.chdir("%s/%s" % (indir, directory or commitcount))
                         do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
+                        if committerdate == "" or authordate == "":
+                            latest = 0
+                            for dirname,_subdirlist,filelist in os.walk("."):
+                                for fname in filelist :
+                                    mtime = os.path.getmtime(os.path.join(dirname,fname))
+                                    if mtime > latest:
+                                        latest = mtime
+                            if committerdate == "":
+                                committerdate = latest
+                            if authordate == "":
+                                authordate = latest
                         os.chdir(outdir)
                         do_or_die("git add -A") 
                         tree_id = capture_or_die("git write-tree").strip()

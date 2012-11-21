@@ -103,6 +103,10 @@ When you are composing commit and tag stanzas by hand, you can count
 on any of the date formats normally acceptable to git to be
 recognized.
 
+If, when weaving, any committer or author or tagger line, the date is omitted,
+git-weave will supply as a default the latest modification time of
+any file in the corresponding tree.
+
 OPTIONS
 -------
 -q::
