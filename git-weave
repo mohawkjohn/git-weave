@@ -2,7 +2,12 @@
 """
 git-weave - assemble tree sequences into repository histories
 
-Requires git and cpio.
+Requires find, git and cpio.
+
+(c) Copyright 2012 by Eric S. Raymond <esr@thyrsus.com>
+
+Distributed under BSD terms.  Permission is explicitly granted for the
+git project to distribute under the maintainer's choice of license.
 """
 # TO DO: 
 # 1. Most-recent-file date extraction from trees.
