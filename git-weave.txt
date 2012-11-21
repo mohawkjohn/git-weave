@@ -24,7 +24,7 @@ the output directory with a log holding commit metadata
 links of the repository DAG) and tags.
 
 An important restriction of this command is that it operates on
-*master branches only*. It is intended mainly for working with project
+*master branches only*. It is intended for working with project
 histories that have been preserved only as linear sequences of release
 snapshots.  The unravel operation discards non-master-branch content.
 
@@ -110,6 +110,18 @@ any file in the corresponding tree.
 If a committer or author or tagger line is omitted entirely, the
 user's name and email address as retrieved by ''git-config'' will
 be supplied as defaults, and the date will default as above.
+
+Thus, the following variation on one of the previous examples 
+is a valid stanza:
+
+------------
+commit 24
+directory intercal-0.17
+parent 23
+
+The state of the INTERCAL project at release 0.17.
+.
+------------
 
 OPTIONS
 -------
