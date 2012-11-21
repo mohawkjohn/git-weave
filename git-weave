@@ -5,12 +5,11 @@ git-weave - assemble tree sequences into repository histories
 Requires git and cpio.
 """
 # TO DO: 
-# 1. Verify function on multibranch repos.
-# 2. Most-recent-file date extraction from trees.
-# 3. Default date to "now" in annotated tags 
-# 4. Automatically unpack taballs and zips?
-# 5. Directory header
-# 6. Loot the contrib directory for other ideas.
+# 1. Most-recent-file date extraction from trees.
+# 2. Default date to "now" in annotated tags 
+# 3. Automatically unpack taballs and zips?
+# 4. Directory header
+# 5. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
@@ -267,7 +266,6 @@ def git_unpack(indir, outdir, quiet=False):
                             continue
                         if leader == "commit" and linecount > 1:
                             wfp.write(".\n")
-                        # FIXME: Check that log raw emits one parent per line
                         if leader in ("commit", "parent"):
                             line = "%s %s\n" % (leader, commit_map[follower])
                             body_latch = False

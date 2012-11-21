@@ -23,20 +23,25 @@ the output directory with a log holding commit metadata
 (committer/author/comment information and parent headers representing
 links of the repository DAG) and tags.
 
-These two modes of operation are almost lossless inverses of each
-other, except that signed tags in an unpacked repository lose
-their signature information.
+An important restriction of this command is that it operates on
+*master branches only*. It is intended mainly for working with project
+histories that have been preserved only as linear sequences of release
+snapshots.  The unravel operation discards non-master-branch content.
 
-Commits from a repository are unraveled into directories named for
-integers from 1 increasing, but their order of composition when
-re-woven is actually set by the sequence of entries in the metadata
-file.  File trees may be inserted or removed without hindering
-re-weaving provided the pointers in the log's parent fields are fixed
-up properly.
+Otherwise these weave and unravel modes of operation are almost
+lossless inverses of each other, except that signed tags in an
+unpacked repository lose their signature information.
+
+Commits from the repository's master branch are unraveled into
+directories named for integers from 1 increasing, but their order of
+composition when re-woven is actually set by the sequence of entries
+in the metadata file.  File trees may be inserted or removed without
+hindering re-weaving provided the pointers in the log's parent fields
+are fixed up properly.
 
 METADATA FILE FORMAT
 --------------------
-The metadata file format will comtain three kinds of stanzas: entries
+The metadata file format will contain three kinds of stanzas: entries
 for commits, entries for lightweight tags, and entries for annotated
 tags.
 
@@ -122,10 +127,6 @@ $ rm -fr unraveled; git-weave repo unraveled
 ------------
 +
 This mode of operation is triggered when there is a 'repo/.git' file.
-
-BUGS
-----
-The tool has not yet been tested on non-linear repositories.
 
 SEE ALSO
 --------
