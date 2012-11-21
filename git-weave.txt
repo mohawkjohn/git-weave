@@ -107,6 +107,10 @@ If, when weaving, any committer or author or tagger line, the date is omitted,
 git-weave will supply as a default the latest modification time of
 any file in the corresponding tree.
 
+If a committer or author or tagger line is omitted entirely, the
+user's name and email address as retrieved by ''git-config'' will
+be supplied as defaults, and the date will default as above.
+
 OPTIONS
 -------
 -q::

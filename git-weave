@@ -126,9 +126,12 @@ def git_weave(indir, outdir, quiet=False):
     commit_id = {}
     state = 0
     parents = []
-    commit = tagname = label = refers_to = ""
-    comment = committername = authorname = ""
-    committerdate = authordate = committeremail = authoremail = ""
+    myname = capture_or_die("git config --get user.name")
+    myemail = capture_or_die("git config --get user.email")
+    commit = tagname = label = refers_to = comment = ""
+    committername = authorname = myname
+    committeremail = authoremail = myemail
+    committerdate = authordate = ""
     directory = None
     commitcount = 1
     linecount = 0
@@ -185,9 +188,9 @@ def git_weave(indir, outdir, quiet=False):
                         do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
                         if committerdate == "" or authordate == "":
                             latest = 0
-                            for dirname,_subdirlist,filelist in os.walk("."):
+                            for dirname, _subdirlist, filelist in os.walk("."):
                                 for fname in filelist :
-                                    mtime = os.path.getmtime(os.path.join(dirname,fname))
+                                    mtime = os.path.getmtime(os.path.join(dirname, fname))
                                     if mtime > latest:
                                         latest = mtime
                             if committerdate == "":
@@ -229,9 +232,10 @@ def git_weave(indir, outdir, quiet=False):
                     state = 0
                     baton.twirl()
                     parents = []
-                    commit = tagname = label = refers_to = ""
-                    comment = committername = authorname = ""
-                    committerdate = authordate = committeremail = authoremail = ""
+                    commit = tagname = label = refers_to = comment = ""
+                    committername = authorname = myname
+                    committeremail = authoremail = myemail
+                    committerdate = authordate = ""
                     directory = None
                 else:
                     if line.startswith("."):
