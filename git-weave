@@ -9,8 +9,6 @@ Requires find, git and cpio.
 Distributed under BSD terms.  Permission is explicitly granted for the
 git project to distribute under the maintainer's choice of license.
 """
-# TO DO: 
-# 1. Loot the contrib directory for other ideas.
 import sys, os, getopt, subprocess, time, tempfile
 
 DEBUG_GENERAL  = 1
