@@ -23,10 +23,15 @@ the output directory with a log holding commit metadata
 (committer/author/comment information and parent headers representing
 links of the repository DAG) and tags.
 
-An important restriction of this command is that it operates on
-*master branches only*. It is intended for working with project
+This tool is primarily intended for importing and working with project
 histories that have been preserved only as linear sequences of release
-snapshots.  The unravel operation discards non-master-branch content.
+snapshots.  It may also be useful for surgery on linear repositories
+
+While the weave operation can build a commit graph with any structure
+desired, an important restriction of the inverse (unraveling)
+operation is that it operates on *master branches only*. The unravel
+operation discards non-master-branch content, emitting a warning 
+to standard error when it has to do so.
 
 Commits from the repository's master branch are unraveled into
 directories named for integers from 1 increasing, but their order of
