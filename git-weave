@@ -8,6 +8,8 @@ Requires find, git and cpio.
 
 Distributed under BSD terms.  Permission is explicitly granted for the
 git project to distribute under the maintainer's choice of license.
+
+Requires Python 2.5 (for the with statement).
 """
 import sys, os, getopt, subprocess, time, tempfile
 
