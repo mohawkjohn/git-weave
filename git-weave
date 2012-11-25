@@ -2,7 +2,7 @@
 """
 git-weave - assemble tree sequences into repository histories
 
-Requires find, git and cpio.
+Requires git, find, and cpio.
 
 (c) Copyright 2012 by Eric S. Raymond <esr@thyrsus.com>
 
@@ -248,7 +248,7 @@ def git_ravel(indir, outdir, quiet=False):
     with Baton("Raveling", enable=not quiet) as baton:
         do_or_die("rm -fr %s; mkdir %s" % (outdir, outdir))
         baton.twirl()
-        do_or_die("cd %s; git log --all --reverse --format=raw >%s" % (indir, rawlogfile))
+        do_or_die("cd %s; git log --all --reverse --date-order --format=raw >%s" % (indir, rawlogfile))
         baton.twirl()
         commitcount = 1
         commit_map = {}
