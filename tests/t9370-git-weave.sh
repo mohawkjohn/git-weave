@@ -46,6 +46,12 @@ The branch content continues to evolve in a different direction.
 EOF
 git commit -q -a -m "The branch content continues to evolve in a different direction."
 
+# Ugh.  What resets come out in a stream dump. and in what order, is 
+# fairly random.  This magic number tells us how to trim the test logs
+# so we're looking at their real content.  Set it to a high-out-of-sight
+# value when modifying the test repo generation.
+TRIM=70
+
 # With the example repo built, we can begin testing
 
 REPO_STREAM=/tmp/repo_stream_$$
@@ -56,10 +62,10 @@ rm -fr -fr $WOVEN $WOVEN_STREAM $RAVELED #$RAVELED_STREAM
 
 cd /tmp
 
-echo "1..4"
+echo "1..5"
 
 # Dump the repo state for later comparison
-if { cd $REPO; git fast-export --all >$REPO_STREAM; }
+if { cd $REPO; git fast-export --all | head -$TRIM >$REPO_STREAM; }
 then
     echo "ok 1 - Streaming of test repo succeeded"
 else
@@ -84,10 +90,8 @@ else
     exit 1
 fi
 
-#(cd $WOVEN; gitk --all)
-
 # Dump its state for comparison with the repo stream
-if { cd $WOVEN; git fast-export --all >$WOVEN_STREAM; }
+if { cd $WOVEN; git fast-export --all | head -$TRIM >$WOVEN_STREAM; }
 then
     echo "ok 4 - Streaming of rewoven repo succeeded"
 else
