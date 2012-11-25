@@ -244,8 +244,6 @@ def git_weave(indir, outdir, quiet=False):
 
 def git_ravel(indir, outdir, quiet=False):
     "Ravel a repository into a tree sequence and associated logfile."
-    if capture_or_die("git branch -l").count("\n") > 1:
-        sys.stderr.write("git-weave: warning - non-master branch conrent will be lost.\n")
     rawlogfile = os.path.join(outdir, "rawlog")
     with Baton("Raveling", enable=not quiet) as baton:
         do_or_die("rm -fr %s; mkdir %s" % (outdir, outdir))
