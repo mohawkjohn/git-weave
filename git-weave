@@ -329,6 +329,14 @@ def git_ravel(indir, outdir, quiet=False):
                                     line = "." + line
                                 wfp.write(line + "\n")
                         wfp.write(".\n")
+                # And about heads too
+                for line in capture_or_die("git show-ref --head").split("\n"):
+                    if line:
+                        (hashid, ref) = line.strip().split()
+                        if ref.startswith("refs/heads"):
+                            ref = os.path.basename(ref)
+                            wfp.write("label %s\nrefers_to %s\n" %
+                                  (ref, commit_map[hashid]))
         except (ValueError, IndexError, KeyError):
             raise Fatal("log rewrite failed on %s" % repr(line))
     os.remove(rawlogfile)
