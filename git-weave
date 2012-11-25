@@ -163,8 +163,7 @@ def git_weave(indir, outdir, quiet=False):
                             if tagname:
                                 refers_to = follower
                             elif head:
-                                # FIXME: This isn't right. We don't want a tag. 
-                                do_or_die("git tag %s %s" \
+                                do_or_die("git update-ref refs/heads/%s %s" \
                                           % (head, commit_id[follower]))
                             else:
                                 do_or_die("git tag %s %s" \
