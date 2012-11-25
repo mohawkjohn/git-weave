@@ -82,6 +82,15 @@ label sample
 refers-to 102
 ------------
 
+A branch stanza declares a named branch to be pointing at a specified
+tip commit.  This example declares a named branch 'devel' with the
+commit identified as 417 as its tip.
+
+------------
+branch devel
+refers-to 417
+------------
+
 A tag stanza declares an annotated tag.  This one declares a tag named
 'annotated1' pointing at the commit declared as 99.
 

@@ -128,7 +128,7 @@ def git_weave(indir, outdir, quiet=False):
     parents = []
     myname = capture_or_die("git config --get user.name")
     myemail = capture_or_die("git config --get user.email")
-    commit = tagname = label = refers_to = comment = ""
+    commit = tagname = label = refers_to = head = comment = ""
     committername = authorname = myname
     committeremail = authoremail = myemail
     committerdate = authordate = ""
@@ -153,6 +153,8 @@ def git_weave(indir, outdir, quiet=False):
                             directory = follower
                         elif leader == "tag":
                             tagname = follower
+                        elif leader == "branch":
+                            head = follower
                         elif leader == "parent":
                             parents.append(follower)
                         elif leader == "label":
@@ -160,6 +162,10 @@ def git_weave(indir, outdir, quiet=False):
                         elif leader == "refers-to":
                             if tagname:
                                 refers_to = follower
+                            elif head:
+                                # FIXME: This isn't right. We don't want a tag. 
+                                do_or_die("git tag %s %s" \
+                                          % (head, commit_id[follower]))
                             else:
                                 do_or_die("git tag %s %s" \
                                           % (label, commit_id[follower]))
@@ -232,7 +238,7 @@ def git_weave(indir, outdir, quiet=False):
                     state = 0
                     baton.twirl()
                     parents = []
-                    commit = tagname = label = refers_to = comment = ""
+                    commit = tagname = label = refers_to = head = comment = ""
                     committername = authorname = myname
                     committeremail = authoremail = myemail
                     committerdate = authordate = ""
@@ -335,7 +341,7 @@ def git_ravel(indir, outdir, quiet=False):
                         (hashid, ref) = line.strip().split()
                         if ref.startswith("refs/heads"):
                             ref = os.path.basename(ref)
-                            wfp.write("label %s\nrefers-to %s\n" %
+                            wfp.write("branch %s\nrefers-to %s\n" %
                                   (ref, commit_map[hashid]))
         except (ValueError, IndexError, KeyError):
             raise Fatal("log rewrite failed on %s" % repr(line))
