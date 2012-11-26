@@ -55,7 +55,7 @@ git commit -q -a -m "The branch content continues to evolve in a different direc
 # fairly random.  This magic number tells us how to trim the test logs
 # so we're looking at their real content.  Set it to a high-out-of-sight
 # value when modifying the test repo generation.
-TRIM=77
+TRIM=76
 
 # With the example repo built, we can begin testing
 
