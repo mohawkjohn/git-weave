@@ -9,7 +9,7 @@ Requires git, find, and cpio.
 Distributed under BSD terms.  Permission is explicitly granted for the
 git project to distribute under the maintainer's choice of license.
 
-Requires Python 2.5 (for the with statement).
+Requires Python 2.6 (for the with statement).
 """
 import sys, os, getopt, subprocess, time, tempfile
 
@@ -347,6 +347,9 @@ def git_ravel(indir, outdir, quiet=False):
     os.remove(rawlogfile)
 
 if __name__ == '__main__':
+    if sys.hexversion < 0x02060000:
+        sys.stderr.write("git-weave: requires Python 2.6 or later.")
+        sys.exit(1)
     (options, arguments) = getopt.getopt(sys.argv[1:], "m:qv")
     mode = 'auto'
     indir = '.'
