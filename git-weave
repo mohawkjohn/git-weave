@@ -116,7 +116,7 @@ def capture_or_die(dcmd, legend=""):
         if e.returncode < 0:
             raise Fatal("child was terminated by signal %d." % -e.returncode)
         elif e.returncode != 0:
-            sys.stderr.write("git-weave: child returned %d." % e.returncode)
+            raise Fatal("child returned %d." % e.returncode)
         sys.exit(1)
     
 def git_weave(indir, outdir, quiet=False):
@@ -393,7 +393,7 @@ if __name__ == '__main__':
         finally:
             os.chdir(here)
     except Fatal, err:
-        sys.stderr.write(err.msg + "\n")
+        sys.stderr.write("git-weave: " + err.msg + "\n")
         sys.exit(1)
     except KeyboardInterrupt:
         pass
