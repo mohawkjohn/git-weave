@@ -8,5 +8,5 @@ pylint:
 	@pylint $(PYLINTOPTS) --disable=$(SUPPRESSIONS) git-weave
 
 check:
-	cd test; $(MAKE) --quiet
+	cd tests; $(MAKE) --quiet
 
