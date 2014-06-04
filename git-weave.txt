@@ -34,7 +34,8 @@ METADATA FILE FORMAT
 --------------------
 The metadata file format will contain three kinds of stanzas: entries
 for commits, entries for lightweight tags, and entries for annotated
-tags.
+tags. These may optionally be separated by comment lines, beginning
+with '#', which are ignored.
 
 A commit stanza has headers similar to those in a commit raw log:
 commit, committer, author, and optionally parent headers.  The header
