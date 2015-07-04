@@ -12,6 +12,8 @@ Requires git, find, and cpio.
 
 To test the software, run 'make check'
 
+The project logo is the ancient Egyption hieroglyph for a weaver's shuttle
+
 						Eric S. Raymond
 						July 2015
 
