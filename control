@@ -1,0 +1,24 @@
+# This is not a real Debian control file, though the syntax is compatible.
+# It's project metadata for the shipper tool
+
+Package: git-weave
+
+Description: Weave a tarball sequence into a git repository.
+ git-weave takes a tarball sequence and a metadata file and synthesizes
+ a live repository. It can invert this, explode git repositories into
+ sequences of per-commit tarballs. The DAG is expressed as a metadata file
+ with mailbox-like entries.
+
+#XBS-Destinations: freshcode
+
+Homepage: http://www.catb.org/~esr/git-weave
+
+XBS-HTML-Target: index.html
+
+XBS-Repository-URL: https://gitlab.com/esr/git-weave
+
+#XBS-OpenHub-URL: http://www.openhub.net/p/git-weave
+
+XBS-Logo: git-weave-logo.png
+
+XBS-VC-Tag-Template: %(version)s

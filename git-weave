@@ -13,6 +13,8 @@ Requires Python 2.6 (for the with statement).
 """
 import sys, os, getopt, subprocess, time, tempfile
 
+version = "1.0"
+
 DEBUG_GENERAL  = 1
 DEBUG_PROGRESS = 2
 DEBUG_COMMANDS = 3
@@ -343,7 +345,7 @@ def git_ravel(indir, outdir, quiet=False):
                         if ref.startswith("refs/heads"):
                             ref = os.path.basename(ref)
                             wfp.write("branch %s\nrefers-to %s\n" %
-                                  (ref, commit_map[hashid]))
+                                      (ref, commit_map[hashid]))
         except (ValueError, IndexError, KeyError):
             raise Fatal("log rewrite failed on %s" % repr(line))
     os.remove(rawlogfile)

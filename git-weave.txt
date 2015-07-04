@@ -166,13 +166,13 @@ This mode of operation is triggered when there is a 'repo/.git' file.
 
 SEE ALSO
 --------
-linkgit:git-log[1]
-linkgit:git-checkout[1]
-linkgit:git-add[1]
-linkgit:git-mktree[1]
-linkgit:git-ls-tree[1]
-linkgit:git-update-references[1]
+git-log(1)
+git-checkout(1)
+git-add(1)
+git-mktree(1)
+git-ls-tree(1)
+git-update-references(1)
 
 GIT
 ---
-Not yet part of the linkgit:git[1] suite
+Not yet part of the git(1) suite

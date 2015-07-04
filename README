@@ -1,0 +1,17 @@
+			README for git-weave
+
+git-weave takes a tarball sequence and a metadata file and synthesizes
+a live repository. It can invert this, explode git repositories into
+sequences of per-commit tarballs. The DAG is expressed as a metadata file
+with mailbox-like entries.
+
+An important application is for making a repository out of ancient
+fossil tarballs by synthesizing a metadata file.
+
+Requires git, find, and cpio.
+
+To test the software, run 'make check'
+
+						Eric S. Raymond
+						July 2015
+
