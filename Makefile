@@ -18,15 +18,21 @@ all: git-weave.1
 clean:
 	rm -f *~ *.1 *.html *.rpm *.lsm MANIFEST
 
-install: git-weave.1 uninstall
-	install -m 0755 -d $(DESTDIR)/usr/bin
-	install -m 0755 -d $(DESTDIR)/usr/share/man/man1
-	install -m 0755 git-weave $(DESTDIR)/usr/bin/
-	install -m 0644 git-weave.1 $(DESTDIR)/usr/share/man/man1/
+prefix?=/usr/local
+mandir?=share/man
+target=$(DESTDIR)$(prefix)
+
+install: git-weave.1
+	install -d "$(target)/bin"
+	install -d "$(target)/$(mandir)/man1"
+	install -m 755 git-weave "$(target)/bin"
+	install -m 644 git-weave.1 "$(target)/$(mandir)/man1"
 
 uninstall:
-	rm -f /usr/bin/git-weave /usr/share/man/man6/git-weave.1
-	rm -f /usr/share/pixmaps/git-weave-logo.png
+	rm "$(target)/$(mandir)/man1/git-weave.1"
+	rm "$(target)/bin/git-weave"
+	-rmdir -p "$(target)/$(mandir)/man1"
+	-rmdir -p "$(target)/bin"
 
 PYLINTOPTS = --rcfile=/dev/null --reports=n \
 	--msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
