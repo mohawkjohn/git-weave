@@ -20,13 +20,9 @@ clean:
 
 install: git-weave.1 uninstall
 	install -m 0755 -d $(DESTDIR)/usr/bin
-	install -m 0755 -d $(DESTDIR)/usr/share/man/man6
-	install -m 0755 -d $(DESTDIR)//usr/share/applications/
-	install -m 0755 -d $(DESTDIR)/usr/share/pixmaps/
-	install -m 0755 -d $(DESTDIR)/usr/share/appdata
+	install -m 0755 -d $(DESTDIR)/usr/share/man/man1
 	install -m 0755 git-weave $(DESTDIR)/usr/bin/
-	install -m 0644 git-weave.1 $(DESTDIR)/usr/share/man/man6/
-	install -m 0644 git-weave.xml $(DESTDIR)/usr/share/appdata/
+	install -m 0644 git-weave.1 $(DESTDIR)/usr/share/man/man1/
 
 uninstall:
 	rm -f /usr/bin/git-weave /usr/share/man/man6/git-weave.1
