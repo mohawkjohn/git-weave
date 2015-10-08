@@ -13,7 +13,7 @@ Requires Python 2.6 (for the with statement).
 """
 import sys, os, getopt, subprocess, time, tempfile
 
-version = "1.0"
+version = "1.1"
 
 DEBUG_GENERAL  = 1
 DEBUG_PROGRESS = 2
