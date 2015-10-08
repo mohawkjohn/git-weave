@@ -286,6 +286,8 @@ def git_ravel(indir, outdir, quiet=False):
                     if line[0].isspace():
                         if line.startswith(" " * 4):
                             line = line[4:]
+                            if line == "\n":
+                                body_latch = False
                             # Old-school byte stuffing.
                             if line.startswith("."):
                                 line = "." + line
