@@ -1,4 +1,7 @@
 			NEWS file for git-weave
 
+1.1: 2015-10-08
+     Don't mangle vlank lines when raveling.
+
 1.0: 2015-07-03
      Initial release.
