@@ -10,6 +10,8 @@ Distributed under BSD terms.  Permission is explicitly granted for the
 git project to distribute under the maintainer's choice of license.
 
 Requires Python 2.6 (for the with statement).
+
+SPDX-License-Identifier: BSD-2-clause
 """
 import sys, os, getopt, subprocess, time, tempfile
 
