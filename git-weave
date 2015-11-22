@@ -11,7 +11,7 @@ git project to distribute under the maintainer's choice of license.
 
 Requires Python 2.6 (for the with statement).
 
-SPDX-License-Identifier: BSD-2-clause
+SPDX-License-Identifier: BSD-2-Clause
 """
 import sys, os, getopt, subprocess, time, tempfile
 
