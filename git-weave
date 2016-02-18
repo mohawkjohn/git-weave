@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """
 git-weave - assemble tree sequences into repository histories
 
@@ -117,7 +117,7 @@ def capture_or_die(dcmd, legend=""):
     if verbose >= DEBUG_COMMANDS:
         sys.stdout.write("executing '%s'%s\n" % (dcmd, legend))
     try:
-        return subprocess.check_output(dcmd, shell=True)
+        return subprocess.check_output(dcmd, shell=True).decode('ascii')
     except subprocess.CalledProcessError as e:
         if e.returncode < 0:
             raise Fatal("child was terminated by signal %d." % -e.returncode)
@@ -318,14 +318,13 @@ def git_ravel(indir, outdir, quiet=False):
                 wfp.write(".\n")
                 # Append information about tags
                 for tagname in capture_or_die("git tag -l").split():
-                    tagname = tagname.decode('utf-8')
                     tagdata = capture_or_die("git show --format=raw %s" % tagname)
-                    if tagdata.startswith(b"commit"):
+                    if tagdata.startswith("commit"):
                         commit = commit_map[tagdata.split("\n")[0].split()[1]]
                         wfp.write("label %s\nrefers-to %s\n" % (tagname, commit))
-                    elif tagdata.startswith(b"tag"):
+                    elif tagdata.startswith("tag"):
                         for line in tagdata.split('\n'):
-                            if line.startswith(b"commit"):
+                            if line.startswith("commit"):
                                 commit = line.strip().split()[1]
                                 break
                         else:
