@@ -219,7 +219,7 @@ def git_weave(indir, outdir, quiet=False):
                         with open(commentfile, "w") as cfp:
                             cfp.write(comment)
                         command = "git commit-tree %s " % tree_id
-                        command += " ".join(map(lambda p: "-p " + commit_id[p], parents))
+                        command += " ".join(["-p " + commit_id[p] for p in parents])
                         command += "<'%s'" % commentfile
                         environment = ""
                         environment += " GIT_AUTHOR_NAME='%s' " % authorname
