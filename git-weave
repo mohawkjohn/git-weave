@@ -318,13 +318,14 @@ def git_ravel(indir, outdir, quiet=False):
                 wfp.write(".\n")
                 # Append information about tags
                 for tagname in capture_or_die("git tag -l").split():
+                    tagname = tagname.decode('utf-8')
                     tagdata = capture_or_die("git show --format=raw %s" % tagname)
-                    if tagdata.startswith("commit"):
+                    if tagdata.startswith(b"commit"):
                         commit = commit_map[tagdata.split("\n")[0].split()[1]]
                         wfp.write("label %s\nrefers-to %s\n" % (tagname, commit))
-                    elif tagdata.startswith("tag"):
+                    elif tagdata.startswith(b"tag"):
                         for line in tagdata.split('\n'):
-                            if line.startswith("commit"):
+                            if line.startswith(b"commit"):
                                 commit = line.strip().split()[1]
                                 break
                         else:
