@@ -13,6 +13,8 @@ Requires Python 2.6 (for the with statement).
 
 SPDX-License-Identifier: BSD-2-Clause
 """
+from __future__ import print_function
+
 import sys, os, getopt, subprocess, time, tempfile
 
 version = "1.1"
@@ -142,7 +144,7 @@ def git_weave(indir, outdir, quiet=False):
     with Baton("Weaving", enable=not quiet) as baton:
         for line in open(logfile):
             if verbose > DEBUG_PROGRESS:
-                print "Looking at: '%s'" % repr(line)
+                print("Looking at: '%s'" % repr(line))
             if state == 0:
                 if line == '\n':
                     state = 1
@@ -188,13 +190,13 @@ def git_weave(indir, outdir, quiet=False):
             elif state == 1:
                 if line == ".\n":
                     if verbose > DEBUG_PROGRESS:
-                        print "Interpretation begins"
+                        print("Interpretation begins")
                     os.chdir(outdir)
                     if commit:
                         if commitcount > 1:
                             do_or_die("rm -f `git ls-tree -r --full-name --name-only HEAD`")
                         if verbose > DEBUG_PROGRESS:
-                            print "Copying"
+                            print("Copying")
                         os.chdir("%s/%s" % (indir, directory or commitcount))
                         do_or_die("find . -print | cpio -pd --quiet %s" % (outdir,))
                         if committerdate == "" or authordate == "":
@@ -212,7 +214,7 @@ def git_weave(indir, outdir, quiet=False):
                         do_or_die("git add -A")
                         tree_id = capture_or_die("git write-tree").strip()
                         if verbose > DEBUG_PROGRESS:
-                            print "Tree ID is", tree_id
+                            print("Tree ID is %s" % tree_id)
                         (_, commentfile) = tempfile.mkstemp()
                         with open(commentfile, "w") as cfp:
                             cfp.write(comment)
@@ -400,7 +402,7 @@ if __name__ == '__main__':
                 git_ravel(indir, outdir, quiet=quiet)
         finally:
             os.chdir(here)
-    except Fatal, err:
+    except Fatal as err:
         sys.stderr.write("git-weave: " + err.msg + "\n")
         sys.exit(1)
     except KeyboardInterrupt:
