@@ -95,6 +95,13 @@ class Baton:
                               % (time.time() - self.time, self.endmsg))
         return False
 
+def run_command(cmd):
+    "Execute a command and return a list of the results (split by line)"
+    p = subprocess.Popen(cmd,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    return iter(p.stdout.readline, b'')
+    
 def do_or_die(dcmd, legend=""):
     "Either execute a command or raise a fatal exception."
     if legend:
@@ -194,7 +201,8 @@ def git_weave(indir, outdir, quiet=False):
                     os.chdir(outdir)
                     if commit:
                         if commitcount > 1:
-                            do_or_die("rm -f `git ls-tree -r --full-name --name-only HEAD`")
+                            for file in run_command(['git', 'ls-tree', '-r', '--full-name', '--name-only', 'HEAD']):
+                                do_or_die("rm -f " + file)
                         if verbose > DEBUG_PROGRESS:
                             print("Copying")
                         os.chdir("%s/%s" % (indir, directory or commitcount))
